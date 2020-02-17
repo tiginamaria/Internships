@@ -1,0 +1,2 @@
+EPSILON = 1e-3
+DELTA = 1e-1
