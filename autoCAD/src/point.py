@@ -19,3 +19,9 @@ class Point(object):
 
     def __eq__(self, other):
         return abs(self.x - other.x) < EPSILON and abs(self.y - other.y) < EPSILON
+
+    def __str__(self):
+        return "(%.6f, %.6f)" % (self.x, self.y)
+
+    def __repr__(self):
+        return "(%.6f, %.6f)" % (self.x, self.y)
