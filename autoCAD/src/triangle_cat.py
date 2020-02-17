@@ -6,19 +6,22 @@ from autoCAD.src.triangle import Triangle
 from autoCAD.src.visualizer import draw
 
 
-def get_cut_point(l, side):
+def calc_cut_point(d, side):
     ab = side.length()
     a, b = side.a, side.b
-    d = (ab - l / math.sqrt(3) - DELTA) / 2
     return Point(d / ab * (a.x + (ab - d) / d * b.x), d / ab * (a.y + (ab - d) / d * b.y))
 
 
-def get_cut_points(l, tr):
-    return [get_cut_point(l, side) for side in tr.sides]
+def calc_cut_points(l, cosines, sides):
+    cut_points = []
+    for (cos, side) in zip(cosines, sides):
+        d, _ = calc_cut_sides(cos, l + DELTA)
+        print(cos, side.length(), d)
+        cut_points.append(calc_cut_point(d, side))
+    return cut_points
 
 
-def get_cut(l, side):
-    p = get_cut_point(l, side)
+def calc_cut(l, p, side):
     a, b = side.a, side.b
     x1, y1 = a.x - b.x, a.y - b.y
     if x1 != 0:
@@ -30,8 +33,32 @@ def get_cut(l, side):
     return Point(x2 + p.x, y2 + p.y), Point(-x2 + p.x, -y2 + p.y)
 
 
-def get_cuts(l, tr):
-    return [get_cut(l, side) for side in tr.sides]
+def calc_cuts(l, tr):
+    cut_points = calc_cut_points(l, tr.cosines(), tr.sides)
+    return [calc_cut(l, p, side) for p, side in zip(cut_points, tr.sides)]
+
+
+def can_cut_equilateral(l, tr: Triangle):
+    side, _, _ = tr.sides
+    return (l + DELTA) * math.sqrt(3) < side.length() + EPSILON
+
+
+def calc_cut_sides(cos, side):
+    sin = math.sqrt(1 - cos ** 2)
+    return side * cos / sin, side / sin
+
+
+def can_cut_acute(l, tr: Triangle):
+    cos_a, cos_b, cos_c = tr.cosines()
+    ab, bc, ca = map(lambda side: side.length(), tr.sides)
+    xa, ya = calc_cut_sides(cos_a, l + DELTA)
+    xb, yb = calc_cut_sides(cos_b, l + DELTA)
+    xc, yc = calc_cut_sides(cos_c, l + DELTA)
+    return xa + yb < ab + EPSILON and xb + yc < bc + EPSILON and xc + ya < ca + EPSILON
+
+
+def can_cut_obtuse(l, tr: Triangle):
+    pass
 
 
 def can_cut(l, tr: Triangle):
@@ -40,28 +67,43 @@ def can_cut(l, tr: Triangle):
         return False
     if tr.is_equilateral():
         print("Triangle is equilateral")
-        side, _, _ = tr.sides
-        return l * math.sqrt(3) + 3 * DELTA < side.length() + EPSILON
+        return can_cut_equilateral(l, tr)
     if tr.is_acute():
         print("Triangle is acute")
-        return
+        return can_cut_acute(l, tr)
+    if tr.is_obtuse():
+        print("Triangle is obtuse")
+        return can_cut_obtuse(l, tr)
+
+
+def get_cut_points(L, tr: Triangle):
+    l = L / 2
+    if not tr.is_valid_triangle():
+        return []
+    if tr.is_equilateral() or tr.is_acute():
+        return calc_cut_points(l, tr.cosines(), tr.sides)
     if tr.is_obtuse():
         print("Triangle is obtuse")
         return
     return
 
 
-if __name__ == '__main__':
-    L = float(input())
-    points = []
-    for _ in range(3):
-        x, y = list(map(float, input().split()))
-        points.append(Point(x, y))
-    tr = Triangle(points[0], points[1], points[2])
+def get_cuts(L, tr: Triangle):
+    l = L / 2
+    if not tr.is_valid_triangle():
+        return []
+    if tr.is_equilateral() or tr.is_acute():
+        return calc_cuts(l, tr)
+    if tr.is_obtuse():
+        print("Triangle is obtuse")
+        return
+    return
+
+
+def triangle_cut(L, tr: Triangle):
     l = L / 2
     cut_exists = can_cut(l, tr)
     if cut_exists:
-        for cut in get_cuts(l, tr):
+        for cut in calc_cuts(l, tr):
             print("(%.6f, %.6f) (%.6f, %.6f)" % (cut[0].x, cut[0].y, cut[1].x, cut[1].y))
-        draw(tr, get_cut_points(l, tr), get_cuts(l, tr))
-
+        draw(tr, get_cut_points(l, tr), calc_cuts(l, tr))
