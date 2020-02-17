@@ -125,11 +125,11 @@ class InterpreterTests(unittest.TestCase):
         self.assertTrue(tr.is_acute())
 
     def test_draw_acute_triangle(self):
-        tr = Triangle(Point(0., 0.), Point(4., 0.), Point(2., 3.5))
+        tr = Triangle(Point(0., 0.), Point(2., 0.), Point(1., 3.5))
         draw(tr, get_cut_points(2., tr), get_cuts(2., tr))
 
     def test_cut_points_acute_triangle(self):
-        tr = Triangle(Point(0., 0.), Point(4., 0.), Point(2., 3.5))
+        tr = Triangle(Point(0., 0.), Point(2., 0.), Point(1., 3.5))
         p1, p2, p3 = get_cut_points(2., tr)
         ab, bc, ca = tr.sides
 
@@ -146,7 +146,7 @@ class InterpreterTests(unittest.TestCase):
         self.assertTrue(self.cut_cross_side_perpendicular(c3, ca))
 
     def test_cuts_acute_triangle_side_cross_cut_in_the_middle(self):
-        tr = Triangle(Point(0., 0.), Point(4., 0.), Point(2., 3.5))
+        tr = Triangle(Point(0., 0.), Point(2., 0.), Point(1., 3.5))
         c1, c2, c3 = get_cuts(2., tr)
         p1, p2, p3 = get_cut_points(2., tr)
         self.assertTrue(self.side_cross_cut_in_the_middle(p1, c1))
@@ -154,14 +154,14 @@ class InterpreterTests(unittest.TestCase):
         self.assertTrue(self.side_cross_cut_in_the_middle(p3, c3))
 
     def test_cuts_acute_triangle_cuts_do_not_cross(self):
-        tr = Triangle(Point(0., 0.), Point(4., 0.), Point(2., 3.5))
+        tr = Triangle(Point(0., 0.), Point(2., 0.), Point(1., 3.5))
         c1, c2, c3 = get_cuts(2., tr)
         self.assertTrue(self.cuts_do_not_cross(c1, c2))
         self.assertTrue(self.cuts_do_not_cross(c1, c3))
         self.assertTrue(self.cuts_do_not_cross(c2, c3))
 
     def test_cuts_acute_triangle_cut_do_not_cross_side(self):
-        tr = Triangle(Point(0., 0.), Point(4., 0.), Point(2., 3.7))
+        tr = Triangle(Point(0., 0.), Point(2., 0.), Point(1., 3.5))
         c1, c2, c3 = get_cuts(2., tr)
         ab, bc, ca = tr.sides
         self.assertTrue(self.cut_do_not_cross_side(c1, ca))

@@ -13,6 +13,7 @@ class Triangle(object):
         def cosine(side1, side2):
             return side1.s_prod(side2) / side1.length() / side2.length()
         a, b, c = self.points
+        print(a.x, a.y, b.x, b.y, c.x, c.y)
         return [cosine(Side(a, b), Side(a, c)),
                 cosine(Side(b, a), Side(b, c)),
                 cosine(Side(c, b), Side(c, a))]

@@ -9,7 +9,7 @@ from autoCAD.src.visualizer import draw
 def calc_cut_point(d, side):
     ab = side.length()
     a, b = side.a, side.b
-    return Point(d / ab * (a.x + (ab - d) / d * b.x), d / ab * (a.y + (ab - d) / d * b.y))
+    return Point((ab - d) / ab * (a.x + d / (ab - d) * b.x), (ab - d) / ab * (a.y + d / (ab - d) * b.y))
 
 
 def calc_cut_points(l, cosines, sides):
